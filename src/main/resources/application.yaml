@@ -1,0 +1,19 @@
+spring.application.name: sftp-for-s3
+
+logging:
+  level:
+    root: INFO
+    org.apache.sshd: TRACE
+    org.carlspring.cloud: TRACE
+
+sftp-for-s3:
+  port: 2212
+  rootBucket: im-sftp-test
+  defaultHomeDir: default
+  host-key-file: "host.ser"
+  users:
+    - username: test
+      password: passw0rd!1
+      homeDir: im-sftp-test
+    - username: test2
+      password: passw0rd!1
