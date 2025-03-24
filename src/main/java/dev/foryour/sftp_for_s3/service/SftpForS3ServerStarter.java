@@ -40,6 +40,7 @@ public class SftpForS3ServerStarter {
         sftpServer.setPort(sftpServerProperties.getPort());
 
         VirtualFileSystemFactory fileSystemFactory = new S3FileSystemFactoryBuilder()
+                .withS3FileSystemProvider(new CustomS3FileSystemProvider())
                 .withBucketName(sftpServerProperties.getRootBucket())
                 .withHomeDirs(sftpServerProperties.getUsers())
                 .withDefaultHomeDir(sftpServerProperties.getDefaultHomeDir())
@@ -51,7 +52,9 @@ public class SftpForS3ServerStarter {
         keyPairProvider.setOverwriteAllowed(false);
         sftpServer.setKeyPairProvider(keyPairProvider);
 
-        SftpSubsystemFactory sftpSubsystemFactory = new SftpSubsystemFactory.Builder().build();
+        SftpSubsystemFactory sftpSubsystemFactory = new SftpSubsystemFactory.Builder()
+//                .withUnsupportedAttributePolicy(UnsupportedAttributePolicy.Ignore)
+                .build();
         sftpServer.setSubsystemFactories(Collections.singletonList(sftpSubsystemFactory));
 
 

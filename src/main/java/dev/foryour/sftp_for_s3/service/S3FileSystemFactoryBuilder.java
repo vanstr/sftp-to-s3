@@ -21,6 +21,12 @@ public class S3FileSystemFactoryBuilder {
     private List<SftpUser> sftpUsers;
     private String bucketName;
     private String defaultHomeDir;
+    private S3FileSystemProvider provider;
+
+    public S3FileSystemFactoryBuilder withS3FileSystemProvider(S3FileSystemProvider provider) {
+        this.provider = provider;
+        return this;
+    }
 
     public S3FileSystemFactoryBuilder withHomeDirs(List<SftpUser> sftpUsers) {
         this.sftpUsers = sftpUsers;
@@ -38,23 +44,25 @@ public class S3FileSystemFactoryBuilder {
     }
 
     public VirtualFileSystemFactory build() throws IOException {
-        if (bucketName == null) {
+        if (this.bucketName == null) {
             throw new IllegalArgumentException("Bucket name is required");
         }
-        S3FileSystemProvider provider = new S3FileSystemProvider();
         S3Client s3Client = S3Client.builder().build();
-        S3FileSystem s3FileSystem = new S3FileSystem(provider, null, s3Client, URI.create("s3:///").getHost());
+        if(this.provider == null) {
+            this.provider = new S3FileSystemProvider();
+        }
+        S3FileSystem s3FileSystem = new S3FileSystem(this.provider, null, s3Client, URI.create("s3:///").getHost());
 
         log.info("Available buckets:");
         s3FileSystem.getRootDirectories().forEach(p -> log.info("{}", p));
 
-        Path bucketPath = s3FileSystem.getPath("/" + bucketName);
+        Path bucketPath = s3FileSystem.getPath("/" + this.bucketName);
         VirtualFileSystemFactory newFileSystem = new VirtualFileSystemFactory(bucketPath);
 
         log.info("Folders in root:");
         Files.list(newFileSystem.getDefaultHomeDir()).forEach(folder -> log.info("{}", folder));
 
-        if (!sftpUsers.isEmpty()) {
+        if (!this.sftpUsers.isEmpty()) {
             setUserHomeDirs(newFileSystem);
         }
 
@@ -62,7 +70,7 @@ public class S3FileSystemFactoryBuilder {
     }
 
     private void setUserHomeDirs(VirtualFileSystemFactory newFileSystem) {
-        sftpUsers.forEach(user -> {
+       this.sftpUsers.forEach(user -> {
             Path path;
             if (StringUtils.hasText(user.getHomeDir())) {
                 path = newFileSystem.getDefaultHomeDir().resolve(user.getHomeDir() + "/");
