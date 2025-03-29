@@ -65,8 +65,7 @@ public class SftpForS3ServerStarter {
         sftpServer.start();
         log.info("SFTP server started");
 
-        // TODO replace with proper shutdown
-        Thread.sleep(180000);
+        Thread.currentThread().join();
     }
 
     @PreDestroy
