@@ -48,7 +48,7 @@ public class S3FileSystemFactoryBuilder {
             throw new IllegalArgumentException("Bucket name is required");
         }
         S3Client s3Client = S3Client.builder().build();
-        if(this.provider == null) {
+        if (this.provider == null) {
             this.provider = new S3FileSystemProvider();
         }
         S3FileSystem s3FileSystem = new S3FileSystem(this.provider, null, s3Client, URI.create("s3:///").getHost());
@@ -70,12 +70,12 @@ public class S3FileSystemFactoryBuilder {
     }
 
     private void setUserHomeDirs(VirtualFileSystemFactory newFileSystem) {
-       this.sftpUsers.forEach(user -> {
+        this.sftpUsers.forEach(user -> {
             Path path;
             if (StringUtils.hasText(user.getHomeDir())) {
-                path = newFileSystem.getDefaultHomeDir().resolve(user.getHomeDir() + "/");
+                path = newFileSystem.getDefaultHomeDir().resolve(user.getHomeDir());
             } else {
-                path = newFileSystem.getDefaultHomeDir().resolve(this.defaultHomeDir + "/");
+                path = newFileSystem.getDefaultHomeDir().resolve(this.defaultHomeDir);
             }
             if (!Files.exists(path)) {
                 try {
