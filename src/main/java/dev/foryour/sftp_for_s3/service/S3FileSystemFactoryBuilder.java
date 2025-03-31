@@ -82,7 +82,7 @@ public class S3FileSystemFactoryBuilder {
                     Files.createDirectory(path);
                     log.info("Home folder created: {}", path);
                 } catch (Exception e) {
-                    log.error("Error creating home folder: {}", path, e);
+                    throw new IllegalStateException("Error creating home folder: " + path, e);
                 }
             }
             newFileSystem.setUserHomeDir(user.getUsername(), path);
